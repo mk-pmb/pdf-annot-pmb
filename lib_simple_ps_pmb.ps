@@ -1,0 +1,96 @@
+%!PS-Adobe-3.0
+
+/LIB_SIMPLE_PS_PMB 8 dict begin
+  /rgb_line {
+    %%args: colorR colorG colorB startX startY destX destY
+    7 2 roll
+    %% rolled args: destX destY colorR colorG colorB startX startY
+    gsave
+      newpath moveto setrgbcolor rlineto stroke
+    grestore
+  } def
+
+  /rgb_line_coordsys {
+    gsave
+      5 setlinewidth
+      0 1 0 0 0  20  50 rgb_line
+      0 0 1 0 0  20 -50 rgb_line
+      1 0 0 0 0 -20  50 rgb_line
+      1 0 1 0 0 -20 -50 rgb_line
+    grestore
+  } def
+
+  /a4_mm_init { LIB_SIMPLE_PS_PMB begin
+    initgraphics
+    72 25.4 div dup scale  %% setze Koordinaten-Maﬂeinheit auf Millimeter
+    /page_width 210 def
+    /page_height 297 def
+  end } bind def
+
+  /select_font { LIB_SIMPLE_PS_PMB begin
+    %%args: FontName FontSize
+    %% e.g. /Courier 10
+    /CurrentFontSize exch def  %% save the font size for later use in /para.
+    findfont     %% search old font
+      dup length %% count character definitions in it
+      dict       %% make a new chardef with the same number of slots
+                 %% to hold our new, latin-1 enabled font variant.
+      begin      %% change namespace to our new chardef dict.
+        {def} forall    %% copy all the old contents.
+        /Encoding ISOLatin1Encoding def
+          %% ^-- declare encoding for our new font,
+          %% replacing the previously copied value.
+        currentdict     %% put a self-ref on the stack for definefont
+      end        %% leave our chardef namespace.
+    /tmp___current_latin1_font  %% assign a save slot to our new font.
+    exch          %% swap the slot's name to the top in order to...
+    definefont    %% ... actually put a font in it. Then just
+    CurrentFontSize scalefont    %% select the size
+    setfont       %% ... and activate the new font.
+  end } bind def
+
+  /print_mxty { LIB_SIMPLE_PS_PMB begin
+    %%args: deltaX deltaY text
+    exch neg    % pull up -y
+    0 exch      % put x=0 in front
+    translate
+    gsave
+      exch 0 moveto         % pull up x and move to it
+      show
+    grestore
+  end } bind def
+
+  /print_text_left_top { LIB_SIMPLE_PS_PMB begin
+    gsave
+    page_height exch sub translate
+    { 0 exch CurrentFontSize exch print_mxty
+      0 linespacing CurrentFontSize add neg translate
+    } forall
+    grestore
+  end } bind def
+
+  /rect_left_top { LIB_SIMPLE_PS_PMB begin
+    %%args: left top width height
+    /RectHeight exch def
+    /RectWidth exch def
+    /RectTop exch def
+    /RectLeft exch def
+    gsave
+      newpath
+        RectLeft page_height RectTop sub moveto
+        RectWidth 0 rlineto
+        0 RectHeight neg rlineto
+        RectWidth neg 0 rlineto
+        0 RectHeight rlineto
+      stroke
+    grestore
+  end } bind def
+
+  /debugprint {
+    200 string    %% create a temporary string buffer
+    cvs           %% fill it with a stringification of the topmost object
+    0 0 moveto show    %% print that string
+  } def
+
+currentdict end def
+/PMBPS { LIB_SIMPLE_PS_PMB exch get exec } def

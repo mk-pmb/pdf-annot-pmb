@@ -1,0 +1,19 @@
+%!PS-Adobe-3.0
+
+/showpage_with_annots {
+  gsave
+  /a4_mm_init PMBPS
+  0 LIB_SIMPLE_PS_PMB /page_height get translate
+  % /rgb_line_coordsys PMBPS
+
+  /fontsize 4 def
+  /linespacing 0.5 def
+  /lineheight fontsize linespacing add def
+  /fontname /Helvetica def /boldfontname /Helvetica-Bold def
+  fontname fontsize 0.8 mul /select_font PMBPS
+
+  cvx exec
+
+  grestore
+  systemdict /showpage get exec
+} bind def
