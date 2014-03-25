@@ -34,5 +34,6 @@ b ann_next
 
 : cmd_line
   s~^\s*(def)\s+~&/~
+  s~^(\s*)(crossout)(\s+)~\1annot_\2\3~
   s~^(\s*)(\S+)(\s+)(.*)$~\1\4\3\2~
 b ann_next
