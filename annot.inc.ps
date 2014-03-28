@@ -9,11 +9,25 @@
     /left exch def
     0 top translate
     gsave
-     0.5 setlinewidth
-     newpath 0 0 moveto width height rlineto stroke
-     newpath width 0 moveto width neg height rlineto stroke
+      0.5 setlinewidth
+      newpath 0 0 moveto width height rlineto stroke
+      newpath width 0 moveto width neg height rlineto stroke
     grestore
     0 height translate
+  end
+} def
+
+/annot_rgbrect {
+  %%args: left top width height cR cG cB
+  7 dict begin
+    gsave
+      setrgbcolor
+      /height exch def
+      /width exch def
+      /top exch def
+      /left exch def
+      left top neg height sub width height rectfill
+    grestore
   end
 } def
 
