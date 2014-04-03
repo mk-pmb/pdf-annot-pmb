@@ -6,7 +6,6 @@ SELFNAME="$(basename "$SELFFILE" .sh)"
 
 function main () {
   # cd "$SELFPATH" || return $?
-  local PARSE_ANN="$(metased_unpack_rules "$SELFPATH"/parse-annot.sed)"
   local -A CFG
   CFG[repeat]=once
   local FILES=()
@@ -142,6 +141,7 @@ function metased_unpack_rules () {
 
 
 function render_ann_code () {
+  local PARSE_ANN="$(metased_unpack_rules "$SELFPATH"/parse-annot.sed)"
   sed -nre "$PARSE_ANN"
 }
 

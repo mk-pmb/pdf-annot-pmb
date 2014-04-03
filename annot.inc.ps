@@ -15,7 +15,7 @@
     grestore
     0 height translate
   end
-} def
+} bind def
 
 /annot_rgbrect {
   %%args: left top width height cR cG cB
@@ -29,7 +29,33 @@
       left top neg height sub width height rectfill
     grestore
   end
-} def
+} bind def
+
+/annot_unsure {
+  gsave
+    1 0 0 setrgbcolor
+    -12.5 0 translate
+    0 lineheight -0.2 mul  lineheight lineheight 1.2 mul rectfill
+    1 1 1 setrgbcolor
+    fontsize 0.3 mul fontsize 0.1 mul moveto
+    (?) show
+  grestore
+} bind def
+
+/font_set {
+  /fontsize_adjust exch def
+  /boldfontname exch def
+  /fontname exch def
+  fontname fontsize fontsize_adjust mul /select_font PMBPS
+} bind def
+
+/font_ss {  %% sans-serif
+  /Helvetica /Helvetica-Bold 1.0 font_set
+} bind def
+
+/font_fw {  %% fixed-width
+  /Courier /Courier-Bold 1.0 font_set
+} bind def
 
 /showpage_with_annots {
   gsave
@@ -37,11 +63,10 @@
   0 LIB_SIMPLE_PS_PMB /page_height get translate
   % /rgb_line_coordsys PMBPS
 
-  /fontsize 4 def
+  /fontsize 3.3 def
   /linespacing 0.5 def
   /lineheight fontsize linespacing add def
-  /fontname /Helvetica def /boldfontname /Helvetica-Bold def
-  fontname fontsize 0.8 mul /select_font PMBPS
+  font_ss
 
   cvx exec
 

@@ -4,9 +4,19 @@
 ^s~<:id:>~[A-Za-z0-9_\\.\\-]+~g
 
 : ann_line
+  /^\s*%"/{s~^\s*%"~~;b ann_next}
   /^\s*%:pg=([0-9]+)$/b begin_page
-  /^\s*(<:id:>)\s+(<:id:>)\s+(<:id:>=|)\(/b text_line
-  /^\s*[a-z0-9_]+\s+/b cmd_line
+  /^\s*%:pg=(even|odd|each)$/{
+    s~^.*=([a-z]+)$~} bind def\n\n/pghead_\1_annots {~
+    b ann_next
+    }
+  /^\s*%:pg=/{
+    s~^.*$~} bind def\n\n(annots: unsupported: &) FAIL {~
+    b ann_next
+    }
+  /^\s*(def)(\s|$)/b cmd_line
+  /^\s*(<:id:>)\s+(<:id:>)\s+(<:id:>\s*=\s*|)(\(|\$)/b text_line
+  /^\s*[A-Za-z]<:id:>(\s|$)/b cmd_line
   s~^%:[a-z\-]+=.*$~~
   s~^\s*\#.*$~~
   s~^[^%]~%?! &~
@@ -19,7 +29,12 @@
 b ann_line
 
 : begin_page
-  s~^.*=([0-9]+)$~} bind def\n\n/pg\1_annots {~
+  s~^.*=([0-9]+)$~/pg\1_annots {\n  /annot_pgnr \1 def~
+  i} bind def
+  i
+  a\  prepare_annots
+  a\  annot_pgnr 2 mod 0 eq { pghead_even_annots } { pghead_odd_annots } ifelse
+  a\  pghead_each_annots
 b ann_next
 
 : text_line
@@ -28,12 +43,14 @@ b ann_next
     s~\)\.\.\n\s*\(~~
     b text_line
   }
-  s~^(\s*(\S+\s+){2})[^=\(]*=~\1~
-  s~$~ /print_mxty PMBPS~
+  s~^(\s*(\S+\s+){2})[^=\(]*=\s*\$?~\1~
+  s~$~\r~
+  s~\s(\(\s*\?\s*|<\?>)\)\s*$~& annot_unsure~
+  s~\r~ /print_mxty PMBPS~
 b ann_next
 
 : cmd_line
   s~^\s*(def)\s+~&/~
-  s~^(\s*)(crossout|rgbrect)(\s+)~\1annot_\2\3~
-  s~^(\s*)(\S+)(\s+)(.*)$~\1\4\3\2~
+  s~^(\s*)(crossout|rgbrect|unsure)(\s+|$)~\1annot_\2\3~
+  s~^(\s*)(\S+)(\s+|$)(.*)$~\1\4\3\2~
 b ann_next
