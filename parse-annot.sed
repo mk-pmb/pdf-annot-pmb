@@ -1,4 +1,4 @@
-#!/bin/sed -nrf
+#!metased -nrf
 # -*- coding: UTF-8, tab-width: 2 -*-
 
 ^s~<:id:>~[A-Za-z0-9_\\.\\-]+~g
