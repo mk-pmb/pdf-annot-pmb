@@ -1,0 +1,82 @@
+#!pdfannot
+# -*- coding: latin-1, tab-width: 4 -*-
+%:src-url=https://wiki.raumzeitlabor.de/images/3/36/Mitgliedsantrag_RaumZeitLabor.pdf
+%:src-pdf=rzl_join_form.empty.pdf
+
+%% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %%
+%%
+%%  NB: The original form does have built-in form fields.
+%%      This example is for people who like a PDF viewer that, while
+%%      being a good viewer, might be less good for editing forms.
+%%      Or just don't like to fill in their names twice.
+%%
+%% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %% %%
+
+def fontsize 4
+font_ss
+# ^-- apply the new font size
+def LH  12
+
+def FirstName   (Bernd)
+def LastName    (Brot)
+
+%:pg=even
+%:pg=odd
+%:pg=each
+    translate   17  -79
+
+%:pg=1
+
+def col1    33
+def chkl    112.5
+ col1      0    first_name  =$FirstName
+ chkl      0    reg_ml      =(X)
+ col1     LH    last_name   =$LastName
+ chkl      0    reg_wiki    =()
+ col1     LH    nickname    =(Bernd)
+ chkl      0    reg_website =(X)
+ col1     LH    birthdate   =(1970-01-01      ... orly  <?>)
+ col1     LH    street_addr =(Auf der Lauer 23)
+ col1     LH    zip_city    =(25000 GET)
+font_fw
+ col1     LH    email       =(bernd@brot.hax)
+font_ss
+
+
+gsave
+ col1     50    bank.depositor1=$FirstName
+   60      0    bank.depositor2=$LastName
+ col1     LH    bank.name=(MtGox)
+ col1     LH    bank.account=(?)
+ col1     LH    bank.blz=(MGOXDE4D0GE)
+grestore
+
+gsave
+    translate   100 -46.6
+   20     24    fee.donate=(9000,01 DGC <?>)
+    # or:
+    # crossout 0 0 78 38.5
+grestore
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# np2
