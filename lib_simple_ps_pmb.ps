@@ -64,11 +64,43 @@
   /print_text_left_top { LIB_SIMPLE_PS_PMB begin
     gsave
     page_height exch sub translate
-    { 0 exch CurrentFontSize exch print_mxty
-      0 linespacing CurrentFontSize add neg translate
-    } forall
+    % use an anon dict as namespace for internal subprocs:
+    16 dict begin
+    /all_lines exch def
+    /ENTstr_mdash (\255) def
+    /stringtype {
+      0 CurrentFontSize neg translate
+      0 0 moveto
+      cur_item {
+        /charnum exch def
+        /charstr (_) def
+        charstr 0 charnum put
+        (\t) charstr eq { /charstr (        ) def } if
+        (¦) charstr eq {
+          /Euro glyphshow
+          /charstr () def
+          } if
+        (\b) charstr eq {
+          gsave 0 CurrentFontSize 0.070 mul neg rmoveto ENTstr_mdash show
+          grestore
+          /charstr () def
+          } if
+        charstr show
+      } forall
+      0 linespacing neg translate
+    } def   % stringtype
+    /arraytype { cur_item aload pop cvx exec } def
+    /nametype { cur_item cvx exec } def
+    /each_item {
+      /cur_item exch def
+      /cur_type cur_item type def
+      % [(current line:) currentdict /cur_type get cur_item] ==
+      cur_type
+    } def
+    all_lines currentdict /each_item get forall
+    end   % no pop: we didn't put it onto the operand stack (currentdict)
     grestore
-  end } bind def
+  end } def
 
   /rect_left_top { LIB_SIMPLE_PS_PMB begin
     %%args: left top width height
