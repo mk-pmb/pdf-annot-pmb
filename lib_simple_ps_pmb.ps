@@ -68,6 +68,7 @@
     16 dict begin
     /all_lines exch def
     /ENTstr_mdash (\255) def
+    /ENTstr_hyphen (-) def
     /stringtype {
       0 CurrentFontSize neg translate
       0 0 moveto
@@ -76,6 +77,9 @@
         /charstr (_) def
         charstr 0 charnum put
         (\t) charstr eq { /charstr (        ) def } if
+        ENTstr_hyphen charstr eq { /charstr ENTstr_mdash def } {
+          ENTstr_mdash charstr eq { /charstr ENTstr_hyphen def } if
+        } ifelse
         (¦) charstr eq {
           /Euro glyphshow
           /charstr () def
