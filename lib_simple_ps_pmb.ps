@@ -67,6 +67,7 @@
     % use an anon dict as namespace for internal subprocs:
     16 dict begin
     /all_lines exch def
+    /skip_char () def
     /ENTstr_mdash (\255) def
     /ENTstr_hyphen (-) def
     /stringtype {
@@ -76,6 +77,8 @@
         /charnum exch def
         /charstr (_) def
         charstr 0 charnum put
+        skip_char charstr eq { /charstr () def } { /skip_char () def } ifelse
+        (\n) charstr eq { /charstr ( ) def /skip_char ( ) def } if
         (\t) charstr eq { /charstr (        ) def } if
         ENTstr_hyphen charstr eq { /charstr ENTstr_mdash def } {
           ENTstr_mdash charstr eq { /charstr ENTstr_hyphen def } if
@@ -89,7 +92,7 @@
           grestore
           /charstr () def
           } if
-        charstr show
+        charstr () ne { charstr show } if
       } forall
       0 linespacing neg translate
     } def   % stringtype
@@ -122,6 +125,46 @@
       stroke
     grestore
   end } bind def
+
+  /repeat_char { 3 dict begin
+    0 get /cnum exch def
+    /slen exch def
+    /sout slen string def
+    0 1 slen 1 sub { sout exch cnum put } for
+    sout
+  end } def
+
+  /substr { 2 dict begin
+    /slen exch def
+    /sidx exch def
+    sidx 0 lt { dup length sidx add /sidx exch def } if
+    sidx slen getinterval
+  end } def
+
+  /putstr { 2 dict begin
+    /snew exch def
+    /sidx exch def
+    sidx 0 lt { dup length sidx add /sidx exch def } if
+    sidx snew putinterval
+  end } def
+
+  /float2fixed { 5 dict begin
+    /fracLen exch def
+    /fracFactor 10 fracLen exp def
+    % work-around for float cvs Bug in evince:
+    fracFactor mul round cvi 10 mul /fixedStr exch def
+    /fixedStr fixedStr 16 string cvs def
+    fixedStr length fracLen le {
+      /fracStart fixedStr def
+      /fixedStr fracLen 2 add (0) repeat_char def
+      fixedStr 2 fracStart putstr
+    } if
+    /fracStart fracLen neg 1 sub def
+    /fracStr fixedStr fracStart fracLen substr def
+    fixedStr fracLen neg fracStr putstr
+    fixedStr fracStart (,) putstr
+    fixedStr
+  end } def
 
   /debugprint {
     200 string    %% create a temporary string buffer
