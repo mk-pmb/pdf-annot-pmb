@@ -134,18 +134,20 @@
     sout
   end } def
 
-  /substr { 2 dict begin
+  /substr { 3 dict begin
     /slen exch def
     /sidx exch def
-    sidx 0 lt { dup length sidx add /sidx exch def } if
-    sidx slen getinterval
+    /sorig exch def
+    sidx 0 lt { sorig length sidx add /sidx exch def } if
+    sorig sidx slen getinterval
   end } def
 
-  /putstr { 2 dict begin
+  /putstr { 3 dict begin
     /snew exch def
     /sidx exch def
-    sidx 0 lt { dup length sidx add /sidx exch def } if
-    sidx snew putinterval
+    /sdest exch def
+    sidx 0 lt { sdest length sidx add /sidx exch def } if
+    sdest sidx snew putinterval
   end } def
 
   /float2fixed { 5 dict begin
@@ -160,9 +162,9 @@
       fixedStr 2 fracStart putstr
     } if
     /fracStart fracLen neg 1 sub def
-    /fracStr fixedStr fracStart fracLen substr def
-    fixedStr fracLen neg fracStr putstr
-    fixedStr fracStart (,) putstr
+    /fracStr fixedStr fracStart fracLen /substr PMBPS def
+    fixedStr fracLen neg fracStr /putstr PMBPS
+    fixedStr fracStart (,) /putstr PMBPS
     fixedStr
   end } def
 
