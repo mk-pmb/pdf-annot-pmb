@@ -1,0 +1,10 @@
+# -*- coding: utf-8, tab-width: 2 -*-
+
+  /gluestr { 3 dict begin
+    /sadd exch def
+    /sglue exch def
+    /sdest exch def
+    sdest dup length sglue putinterval
+    sdest dup length snew putinterval
+  end } def
+
