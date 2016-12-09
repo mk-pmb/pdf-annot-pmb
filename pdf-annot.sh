@@ -4,7 +4,7 @@ SELFFILE="$(readlink -m "$0")"; SELFPATH="$(dirname "$SELFFILE")"
 SELFNAME="$(basename "$SELFFILE" .sh)"
 
 
-function main () {
+function pdfannot () {
   # cd "$SELFPATH" || return $?
   local -A CFG
   CFG[repeat]=once
@@ -25,7 +25,7 @@ function main () {
         [ "${PIPESTATUS[0]}" == 0 ] && return 0
         echo "E: neither a function nor declared: $1" >&2
         return 3;;
-      -w | -watch | \
+      -w | --watch | \
       -m | --monitor )
         CFG[repeat]=watch;;
       -p | --pages )
@@ -33,7 +33,11 @@ function main () {
       --*=* )
         OPT="${OPT#--}"
         CFG["${OPT%%=*}"]="${OPT#*=}";;
-      -* ) return 1$(echo "E: $0: unsupported option: $OPT" >&2);;
+      --help | \
+      -* )
+        local -fp "${FUNCNAME[0]}" | guess_bash_script_config_opts-pmb
+        [ "${OPT//-/}" == help ] && return 0
+        echo "E: $0: unsupported option: $OPT" >&2; return 1;;
       * ) FILES+=( "$OPT" );;
     esac
   done
@@ -164,4 +168,4 @@ function render_ann_code () {
 
 
 
-main "$@"; exit $?
+pdfannot "$@"; exit $?
