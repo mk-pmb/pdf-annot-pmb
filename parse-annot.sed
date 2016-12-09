@@ -40,7 +40,7 @@ b ann_next
 : text_line
   /\)\.\.$/{
     N
-    s~\)\.\.\n\s*\(~~
+    s~\)\.\.\n\s*\(~~       # merge multi-line strings
     b text_line
   }
   s~^(\s*(\S+\s+){2})[^=\(]*=\s*\$?~\1~
@@ -51,6 +51,33 @@ b ann_next
 
 : cmd_line
   s~^\s*(def)\s+~&/~
-  s~^(\s*)(crossout|rgbrect|unsure)(\s+|$)~\1annot_\2\3~
-  s~^(\s*)(\S+)(\s+|$)(.*)$~\1\4\3\2~
+  s~^(\s*)(crossout|rgbrect|unsure|textblock)(\s+|$)~\1annot_\2\3~
+  /\[$/{
+    : cmd_line__read_more_array_lines
+    /\]$/!{N; b cmd_line__read_more_array_lines}
+    # s~\n\s*~ ~g
+  }
+  # put the command behind the args:
+  s~^($=indent|\s*)($=cmd|[a-zA-Z_0-9]+)($=argsep\
+    |\s+|$)($=args|.*)$~\1\4\3\2~
 b ann_next
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+: scroll

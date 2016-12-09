@@ -68,10 +68,10 @@ function pdfannot () {
 function render_one_annot () {
   local -A SRC_ANN
   SRC_ANN[fn]="$1"; shift
-  SRC_ANN[code]="$(sed "${SRC_ANN[fn]}" -re '
+  SRC_ANN[code]="$(LANG=C sed -re '
     /^\s*(#|$)/d
     s~\r~~
-    ')"
+    ' -- "${SRC_ANN[fn]}")"
   local PGNUM="${CFG[pages]}"
 
   local -A BGPDF
@@ -81,8 +81,9 @@ function render_one_annot () {
     echo "E: unable to find %:src-pdf= in ${SRC_ANN[fn]}" >&2)
   [ -f "${BGPDF[fn]}" ] || return 2$(echo 'E: unable to find background PDF' \
     "'${BGPDF[fn]}' for ${SRC_ANN[fn]}" >&2)
-  BGPDF[meta]="$(LANG=C pdfinfo "${BGPDF[fn]}" | sed -re 's~:\s+~:~')"
-  BGPDF[pgcnt]="$(<<<"${BGPDF[meta]}" sed -nre 's~^[Pp]ages:~~p')"
+  BGPDF[meta]="$(LANG=C pdfinfo -- "${BGPDF[fn]}" | LANG=C sed -re '
+    s~:\s+~:~')"
+  BGPDF[pgcnt]="$(<<<"${BGPDF[meta]}" LANG=C sed -nre 's~^[Pp]ages:~~p')"
   [ "${BGPDF[pgcnt]:-0}" -gt 0 ] || return 2$(echo 'E: unable to count' \
     "pages of background PDF '${BGPDF[fn]}' for ${SRC_ANN[fn]}" >&2)
 
@@ -104,7 +105,7 @@ function render_one_annot () {
   PDF2PS+=( -level3 )
   PDF2PS+=( -origpagesizes )
   PDF2PS+=( "${BGPDF[fn]}" "$DEST_TMP" )
-  "${PDF2PS[@]}" 2>&1 | sed -re '
+  "${PDF2PS[@]}" 2>&1 | LANG=C sed -re '
     /^Error [^:]+: No current point in closepath$/d
     s~^~pdftops: ~' >&2
   local RETVAL="${PIPESTATUS[0]}"
@@ -113,22 +114,23 @@ function render_one_annot () {
   head -n 1 "$DEST_TMP" >"$DEST_PS" || return $?
   local ITEM=
   for ITEM in lib_simple_ps_pmb annot.inc; do
-    sed -re '1{/^%!PS/d}' "$SELFPATH/$ITEM.ps" >>"$DEST_PS" || return $?
+    LANG=C sed -re '1{/^%!PS/d}' -- "$SELFPATH/$ITEM.ps" \
+      >>"$DEST_PS" || return $?
   done
 
-  SRC_ANN[annot-pages]="$(<<<"${SRC_ANN[code]}" sed -nre '
+  SRC_ANN[annot-pages]="$(<<<"${SRC_ANN[code]}" LANG=C sed -nre '
     s~^\s*%:pg=([0-9]+)$~ \1\t~p')
     <:>"
   # echo "pages with annots: ${SRC_ANN[annot-pages]}" | tr '\t' '^' >&2
   <<<"${SRC_ANN[code]}" render_ann_code >>"$DEST_PS" || return $?
   # nl -ba "$DEST_PS"
 
-  sed "$DEST_TMP" -re "
+  LANG=C sed -re "
     1d
     $(grep -nxFe showpage "$DEST_TMP" | nl -ba -v"${PGNUM:-1}" -w 12 \
-      | grep -Fe "${SRC_ANN[annot-pages]}" | sed -re 's!^\s*([0-9]+)\t([0-9]+|\
+      | grep -Fe "${SRC_ANN[annot-pages]}" | LANG=C sed -re 's!^\s*([0-9]+)\t([0-9]+|\
         ).*$!\2s~^.*$~/pg\1_annots showpage_with_annots~!')
-    " >>"$DEST_PS" || return $?
+    " -- "$DEST_TMP" >>"$DEST_PS" || return $?
   ps2pdf "$DEST_PS" || return $?
   for ITEM in "$DEST_TMP" "$DEST_PS" "$DEST_BFN".tmp.{pdf,ps}; do
     [ -f "$ITEM" ] && rm "$ITEM"
@@ -139,14 +141,15 @@ function render_one_annot () {
 
 function metased_unpack_rules () {
   local METASED_FILE="$1"
-  local META_TRANSFORMS="$(sed -nre 's~^(\s*)\^~\1~p' "$METASED_FILE")"
-  sed -re '/^\s*\^/d;'"$META_TRANSFORMS" "$METASED_FILE"
+  local META_TRANSFORMS="$(LANG=C sed -nre 's~^(\s*)\^~\1~p
+    ' -- "$METASED_FILE")"
+  LANG=C sed -re '/^\s*\^/d;'"$META_TRANSFORMS" -- "$METASED_FILE"
 }
 
 
 function render_ann_code () {
   local PARSE_ANN="$(metased_unpack_rules "$SELFPATH"/parse-annot.sed)"
-  sed -nre "$PARSE_ANN"
+  LANG=C sed -nre "$PARSE_ANN"
 }
 
 

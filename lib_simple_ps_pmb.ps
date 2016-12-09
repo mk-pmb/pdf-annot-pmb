@@ -50,6 +50,34 @@
     setfont       %% ... and activate the new font.
   end } bind def
 
+  /ENTstr_mdash (\255) def
+  /ENTstr_hyphen (-) def
+
+  /fancy_show { LIB_SIMPLE_PS_PMB begin
+    /skip_char () def
+    {
+      /charnum exch def
+      /charstr (_) def
+      charstr 0 charnum put
+      skip_char charstr eq { /charstr () def } { /skip_char () def } ifelse
+      (\n) charstr eq { /charstr ( ) def /skip_char ( ) def } if
+      (\t) charstr eq { /charstr (        ) def } if
+      ENTstr_hyphen charstr eq { /charstr ENTstr_mdash def } {
+        ENTstr_mdash charstr eq { /charstr ENTstr_hyphen def } if
+      } ifelse
+      (¦) charstr eq {
+        /Euro glyphshow
+        /charstr () def
+        } if
+      (\b) charstr eq {
+        gsave 0 CurrentFontSize 0.070 mul neg rmoveto ENTstr_mdash show
+        grestore
+        /charstr () def
+        } if
+      charstr () ne { charstr show } if
+    } forall
+  } bind def
+
   /print_mxty { LIB_SIMPLE_PS_PMB begin
     %%args: deltaX deltaY text
     exch neg    % pull up -y
@@ -57,43 +85,19 @@
     translate
     gsave
       exch 0 moveto         % pull up x and move to it
-      show
+      fancy_show
     grestore
   end } bind def
 
-  /print_text_left_top { LIB_SIMPLE_PS_PMB begin
+  /print_text_block { LIB_SIMPLE_PS_PMB begin
     gsave
-    page_height exch sub translate
     % use an anon dict as namespace for internal subprocs:
     16 dict begin
     /all_lines exch def
-    /skip_char () def
-    /ENTstr_mdash (\255) def
-    /ENTstr_hyphen (-) def
     /stringtype {
       0 CurrentFontSize neg translate
       0 0 moveto
-      cur_item {
-        /charnum exch def
-        /charstr (_) def
-        charstr 0 charnum put
-        skip_char charstr eq { /charstr () def } { /skip_char () def } ifelse
-        (\n) charstr eq { /charstr ( ) def /skip_char ( ) def } if
-        (\t) charstr eq { /charstr (        ) def } if
-        ENTstr_hyphen charstr eq { /charstr ENTstr_mdash def } {
-          ENTstr_mdash charstr eq { /charstr ENTstr_hyphen def } if
-        } ifelse
-        (¦) charstr eq {
-          /Euro glyphshow
-          /charstr () def
-          } if
-        (\b) charstr eq {
-          gsave 0 CurrentFontSize 0.070 mul neg rmoveto ENTstr_mdash show
-          grestore
-          /charstr () def
-          } if
-        charstr () ne { charstr show } if
-      } forall
+      cur_item fancy_show
       0 linespacing neg translate
     } def   % stringtype
     /arraytype { cur_item aload pop cvx exec } def
@@ -106,6 +110,13 @@
     } def
     all_lines currentdict /each_item get forall
     end   % no pop: we didn't put it onto the operand stack (currentdict)
+    grestore
+  end } def
+
+  /print_text_left_top { LIB_SIMPLE_PS_PMB begin
+    gsave
+    page_height exch sub translate
+    print_text_block
     grestore
   end } def
 

@@ -1,5 +1,10 @@
 %!PS-Adobe-3.0
 
+/annot_textblock {
+  %%args: lines_array
+  /print_text_block PMBPS
+} bind def
+
 /annot_crossout {
   %%args: left top width height
   4 dict begin
@@ -44,18 +49,15 @@
 
 /font_set {
   /fontsize_adjust exch def
-  /boldfontname exch def
   /fontname exch def
   fontname fontsize fontsize_adjust mul /select_font PMBPS
 } bind def
 
-/font_ss {  %% sans-serif
-  /Helvetica /Helvetica-Bold 1.0 font_set
-} bind def
-
-/font_fw {  %% fixed-width
-  /Courier /Courier-Bold 1.0 font_set
-} bind def
+%% fonts: ss = sans-serif, fw = fixed-width, B = bold
+/font_ss { /Helvetica 1.0 font_set } bind def
+/font_ssB { /Helvetica-Bold 1.0 font_set } bind def
+/font_fw { /Courier 1.0 font_set } bind def
+/font_fwB { /Courier-Bold 1.0 font_set } bind def
 
 /showpage_with_annots {
   gsave
