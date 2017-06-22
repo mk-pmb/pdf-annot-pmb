@@ -1,7 +1,13 @@
--*- coding: utf-8, tab-width: 2 -*-
+﻿
+<!--#echo json="package.json" key="name" underline="=" -->
+pdf-annot-pmb
+=============
+<!--/#echo -->
 
-pdf-annot
-=========
+<!--#echo json="package.json" key="description" -->
+Tools (mostly bash + sed scripts) for adding annotations to PDF documents.
+<!--/#echo -->
+
 
 * ☑ Add your annotations to a PDF.
 * ☑ Save annotations in a format suitable for revision control software (esp. git).
@@ -15,7 +21,26 @@ Maybe someday I'll write docs. I hope you like to `findfont` `dup` `length` `dic
 * It's not intended to be quality software. I started it as a dirty hack to get the job done, and then some demo scene wannabe hipster spirits started to haunt it.
 
 
-License
-=======
+<!--/include-->
 
-MIT.
+
+<!--#toc stop="scan" -->
+
+
+
+Known issues
+------------
+
+* needs more/better tests and docs
+
+
+
+
+&nbsp;
+
+
+License
+-------
+<!--#echo json="package.json" key=".license" -->
+ISC
+<!--/#echo -->

@@ -1,0 +1,36 @@
+{ "name": "pdf-annot-pmb",
+  "version": "0.1.0",
+  "description": "Tools (mostly bash + sed scripts) for adding annotations to PDF documents.",
+  "keywords": [
+    "pdf",
+    "postscript"
+  ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/pdf-annot-pmb#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/pdf-annot-pmb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/pdf-annot-pmb/issues"
+  },
+
+  "private": false, "license": "ISC",
+
+  "main": "annot.js",
+  "scripts": { "test": "nodejs test/all.js" },
+  "directories": {
+    "doc": "docs",
+    "docs/why+s": "github pages 2016-12-18",
+    "test": "test"
+  },
+
+  "dependencies": {},
+  "devDependencies": {
+    "equal-pmb": "^0.1.6"
+  },
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}

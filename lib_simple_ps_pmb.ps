@@ -1,53 +1,114 @@
 %!PS-Adobe-3.0
 
-/LIB_SIMPLE_PS_PMB 8 dict begin
-  /rgb_line {
-    %%args: colorR colorG colorB startX startY destX destY
-    7 2 roll
-    %% rolled args: destX destY colorR colorG colorB startX startY
-    gsave
-      newpath moveto setrgbcolor rlineto stroke
-    grestore
+/LIB_SIMPLE_PS_PMB 8 dict def %%autoupdate:LIB_SIMPLE_PS_PMB:start%%
+%%{ "version": "0.1.0" }
+/PMBPS {
+  dup type /nametype ne { exch } if
+  LIB_SIMPLE_PS_PMB exch get exec
+} bind def
+LIB_SIMPLE_PS_PMB begin
+  /orig_showpage /showpage cvx def
+  /typeof { dup where { exch get type } { pop /undefined } ifelse } def
+  /defined { where dup { exch pop } if } def
+  /eqeq { == } def
+
+  /getifhas { 2 dict begin
+    /@args [
+      /dict /key
+      /prepare  ( Executed if the key was known, with value on the stack.)
+      /default  ( Executed if otherwise, can be used to push a default value.)
+      ] def
+    end
+    4 2 roll 2 copy known { get 3 1 roll } { pop pop exch } ifelse pop exec
   } def
 
-  /rgb_line_coordsys {
-    gsave
-      5 setlinewidth
-      %% red and blue channel: 0 = +, 1 = -
-      0 1 0 0 0  20  50 rgb_line
-      0 0 1 0 0  20 -50 rgb_line
-      1 0 0 0 0 -20  50 rgb_line
-      1 0 1 0 0 -20 -50 rgb_line
-    grestore
-  } def
+  /linespacing 0 def
+  /CurrentFontSize 0 def
 
-  /a4_mm_init { LIB_SIMPLE_PS_PMB begin
+  /initpage { LIB_SIMPLE_PS_PMB begin
+    /@args <<
+      /ULU    ( User Length Unit. Can be a float (how many ULU per one inch?)
+                or one of these strings: (inch) (mm) (cm) )
+      /w      ( page width in ULU)
+      /h      ( page height in ULU)
+      /upside ( page orientation, one of: (up) (down) (left) (right) )
+      >> def
+    /@args exch def
+    /ULU_per_inch @args /ULU get def
+    << % pre-defined ULU
+      (cm)    2.54
+      (inch)  1
+      (mm)    25.4
+      >> ULU_per_inch { /ULU_per_inch exch def } {} getifhas
+    /pageWidth  @args /w get def
+    /pageHeight @args /h get def
     initgraphics
-    72 25.4 div dup scale  %% setze Koordinaten-Maﬂeinheit auf Millimeter
-    /page_width 210 def
-    /page_height 297 def
+    /DeviceRGB setcolorspace
+    << /PageSize [
+        pageWidth  ULU_per_inch div
+        pageHeight ULU_per_inch div
+        ] def
+      /Orientation << (up) 0 (right) 2 (down) 2 (left) 2
+        >> @args /upside {} { null } getifhas {} { 0 } getifhas
+      /ImagingBBox null
+      >> setpagedevice
+    << /ULU_per_inch ULU_per_inch >> scale_ULU
+    0 0 moveto
+    1 0 0 setrgbcolor
+    /Helvetica 10 select_font
   end } bind def
 
+  /scale_ULU { /ULU_per_inch get 72 exch div dup scale } def
+  /scale_to_mm { 72 25.4 div dup scale } def
+
+  /initpage_a4_mm_upright {
+    /initpage << /w 210 /h 297 /ULU (mm) /upside (up) >> PMBPS
+  } bind def
+
+  /a4_mm_init {
+    (!!) dup ==
+    (!! DEPRECATED !! a4_mm_init -> initgr_a4_mm_upright !!) == == FAIL
+  } bind def
+
+  /setblack {
+    1 exch sub
+    % ^-- gray = white-ness = 1 - blackness
+    dup dup setrgbcolor
+    % ^-- RGB: b/c "setgray" causes black dither on HP Color LaserJet CP1515n
+  } bind def
+
+  /rgb_line { dict
+    %%arg:rgb   [r, g, b] each as fraction
+    %%arg:from  [x y]
+    %%arg:to    [x y]
+    gsave newpath
+      dup /from get dup /x get dup /y get moveto pop
+      dup /r get dup /g get dup /b get setrgbcolor pop
+      dup /to get dup /x get dup /y get lineto pop
+      stroke
+    grestore pop
+  } def
+
   /select_font { LIB_SIMPLE_PS_PMB begin
-    %%args: FontName FontSize
-    %% e.g. /Courier 10
-    /CurrentFontSize exch def  %% save the font size for later use in /para.
-    findfont     %% search old font
-      dup length %% count character definitions in it
-      dict       %% make a new chardef with the same number of slots
-                 %% to hold our new, latin-1 enabled font variant.
-      begin      %% change namespace to our new chardef dict.
-        {def} forall    %% copy all the old contents.
+    /@args [ /FontName /FontSize ] def
+    % e.g. /Courier 10
+    /CurrentFontSize exch def  % save the font size for later use in /para.
+    findfont     % search old font
+      dup length % count character definitions in it
+      dict       % make a new chardef with the same number of slots
+                 % to hold our new, latin-1 enabled font variant.
+      begin      % change namespace to our new chardef dict.
+        {def} forall    % copy all the old contents.
         /Encoding ISOLatin1Encoding def
-          %% ^-- declare encoding for our new font,
-          %% replacing the previously copied value.
-        currentdict     %% put a self-ref on the stack for definefont
-      end        %% leave our chardef namespace.
-    /tmp___current_latin1_font  %% assign a save slot to our new font.
-    exch          %% swap the slot's name to the top in order to...
-    definefont    %% ... actually put a font in it. Then just
-    CurrentFontSize scalefont    %% select the size
-    setfont       %% ... and activate the new font.
+          % ^-- declare encoding for our new font,
+          % replacing the previously copied value.
+        currentdict     % put a self-ref on the stack for definefont
+      end        % leave our chardef namespace.
+    /tmp___current_latin1_font  % assign a save slot to our new font.
+    exch          % swap the slot's name to the top in order to...
+    definefont    % ... actually put a font in it. Then just
+    CurrentFontSize scalefont    % select the size
+    setfont       % ... and activate the new font.
   end } bind def
 
   /ENTstr_mdash (\255) def
@@ -79,7 +140,7 @@
   } bind def
 
   /print_mxty { LIB_SIMPLE_PS_PMB begin
-    %%args: deltaX deltaY text
+    /@args [ /deltaX /deltaY /text ] def
     exch neg    % pull up -y
     0 exch      % put x=0 in front
     translate
@@ -115,24 +176,26 @@
 
   /print_text_left_top { LIB_SIMPLE_PS_PMB begin
     gsave
-    page_height exch sub translate
+    pageHeight exch sub translate
     print_text_block
     grestore
   end } def
 
-  /rect_left_top { LIB_SIMPLE_PS_PMB begin
-    %%args: left top width height
-    /RectHeight exch def
-    /RectWidth exch def
-    /RectTop exch def
-    /RectLeft exch def
+  /linerect { 1 dict begin
+    /@args <<
+      /top    ()
+      /left   ()
+      /width  ()
+      /height ()
+      >> def
+    /@args exch def
     gsave
       newpath
-        RectLeft page_height RectTop sub moveto
-        RectWidth 0 rlineto
-        0 RectHeight neg rlineto
-        RectWidth neg 0 rlineto
-        0 RectHeight rlineto
+        @args /left get pageHeight @args /top get sub moveto
+        @args /width get 0 rlineto
+        0 @args /height get neg rlineto
+        @args /width get neg 0 rlineto
+        0 @args /height get rlineto
       stroke
     grestore
   end } bind def
@@ -179,11 +242,47 @@
     fixedStr
   end } def
 
-  /debugprint {
-    200 string    %% create a temporary string buffer
-    cvs           %% fill it with a stringification of the topmost object
-    0 0 moveto show    %% print that string
+  /debug_show {
+    200 string    % create a temporary string buffer
+    cvs           % fill it with a stringification of the topmost object
+    0 0 moveto show    % print that string
   } def
 
-currentdict end def
-/PMBPS { LIB_SIMPLE_PS_PMB exch get exec } def
+  /render_as_overlay { 2 dict begin
+    TODO
+  end } def
+
+
+
+  /LIB_SIMPLE_PS_PMB_autoexec dup defined { cvx exec } { pop } ifelse
+end %%autoupdate:LIB_SIMPLE_PS_PMB:end%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%#scroll#
