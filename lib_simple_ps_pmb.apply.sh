@@ -61,12 +61,23 @@ function lib_simple_ps_pmb_apply () {
       lib_* ) continue;;
     esac
     echo -n "$FN: "
-    TMP_FN="$BFN.upd-$$.tmp"
+    ps2pdf "$TMP_FN".tmp /dev/null || return $?$(
+      echo "E: failed to render original $FN" >&2)
+    TMP_BFN="$BFN.upd-$$"
     <<<"$LIB_LINES" sed -nrf <(echo "$SED_INSERT_CMD"
-      ) -- "$FN" >"$TMP_FN" || return $?
-    # colordiff -sU 8 "$FN" "$TMP_FN"
-    mv "$TMP_FN" "$FN" || return $?
-    echo 'updated.'
+      ) -- "$FN" >"$TMP_FN".tmp || return $?
+    diff -U 4 "$FN" "$TMP_FN".tmp >"$TMP_FN".diff
+    if [ -s "$TMP_FN".diff ]; then
+      ps2pdf "$TMP_FN".tmp /dev/null || return $?$(
+        echo "E: failed to render $TMP_FN.tmp" >&2)
+      mv --no-target-directory -- "$TMP_FN".tmp "$FN" || return $?$(
+        echo "E: failed to mv $TMP_FN.tmp" >&2)
+      echo 'updated.'
+    else
+      rm -- "$TMP_FN".tmp
+      echo 'no changes.'
+    fi
+    rm -- "$TMP_FN".diff
   done
 
   return 0
