@@ -92,23 +92,13 @@ LIB_SIMPLE_PS_PMB begin
   /select_font { LIB_SIMPLE_PS_PMB begin
     /@args [ /FontName /FontSize ] def
     % e.g. /Courier 10
-    /CurrentFontSize exch def  % save the font size for later use in /para.
-    findfont     % search old font
-      dup length % count character definitions in it
-      dict       % make a new chardef with the same number of slots
-                 % to hold our new, latin-1 enabled font variant.
-      begin      % change namespace to our new chardef dict.
-        {def} forall    % copy all the old contents.
-        /Encoding ISOLatin1Encoding def
-          % ^-- declare encoding for our new font,
-          % replacing the previously copied value.
-        currentdict     % put a self-ref on the stack for definefont
-      end        % leave our chardef namespace.
-    /tmp___current_latin1_font  % assign a save slot to our new font.
-    exch          % swap the slot's name to the top in order to...
-    definefont    % ... actually put a font in it. Then just
-    CurrentFontSize scalefont    % select the size
-    setfont       % ... and activate the new font.
+    /CurrentFontSize exch def   % save the font size for later use in /para.
+    /CurrentFontName exch def
+    /CurrentFontLatin1 CurrentFontName length dict begin
+      CurrentFontName findfont {def} forall   % copy all font data
+      /Encoding ISOLatin1Encoding def         % but replace encoding
+      currentdict
+    end definefont CurrentFontSize scalefont setfont
   end } bind def
 
   /ENTstr_mdash (\255) def
