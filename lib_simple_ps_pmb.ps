@@ -25,7 +25,7 @@ LIB_SIMPLE_PS_PMB begin
   /linespacing 0 def
   /CurrentFontSize 0 def
 
-  /initpage { LIB_SIMPLE_PS_PMB begin
+  /configure_page_size { LIB_SIMPLE_PS_PMB begin
     /@args <<
       /ULU    ( User Length Unit. Can be a float (how many ULU per one inch?)
                 or one of these strings: (inch) (mm) (cm) )
@@ -42,6 +42,10 @@ LIB_SIMPLE_PS_PMB begin
       >> ULU_per_inch { /ULU_per_inch exch def } {} getifhas
     /pageWidth  @args /w get def
     /pageHeight @args /h get def
+  end } bind def
+
+  /initpage { LIB_SIMPLE_PS_PMB begin
+    /configure_page_size PMBPS
     initgraphics
     /DeviceRGB setcolorspace
     << /PageSize [
@@ -61,13 +65,16 @@ LIB_SIMPLE_PS_PMB begin
   /scale_ULU { /ULU_per_inch get 72 exch div dup scale } def
   /scale_to_mm { 72 25.4 div dup scale } def
 
+  /pagesize_a4_mm_upright { << /w 210 /h 297 /ULU (mm) /upside (up) >> } def
+
   /initpage_a4_mm_upright {
-    /initpage << /w 210 /h 297 /ULU (mm) /upside (up) >> PMBPS
+    /pagesize_a4_mm_upright PMBPS
+    /initpage PMBPS
   } bind def
 
   /a4_mm_init {
     (!!) dup ==
-    (!! DEPRECATED !! a4_mm_init -> initgr_a4_mm_upright !!) == == FAIL
+    (!! DEPRECATED !! a4_mm_init -> initpage_a4_mm_upright !!) == == FAIL
   } bind def
 
   /setblack {

@@ -11,7 +11,8 @@
     b ann_next
     }
   /^\s*%:pg=/{
-    s~^.*$~} bind def\n\n(annots: unsupported: &) FAIL {~
+    s~^.*$~} bind def\n\
+    (annots: unsupported: &) FAIL {~
     b ann_next
     }
   /^\s*(def)(\s|$)/b cmd_line
@@ -21,19 +22,28 @@
   s~^\s*\#.*$~~
   s~^[^%]~%?! &~
 : ann_next
-  1s~^~\n/prepare_annots \{\n~
-  $s~$~\n\} bind def\n~
+  1s~^~\
+    /annot_pgnr 0 def\n\
+    /prepare_annots \{\
+      annot_pgnr 2 mod 0 eq { pghead_even_annots } { pghead_odd_annots } ifelse\
+    ~
+  ${
+    a\} bind def
+    a\%% ENDOF annots
+    a
+  }
   # s~\n{2,}~\n~g
   /\S/p
   n
 b ann_line
 
 : begin_page
-  s~^.*=([0-9]+)$~/pg\1_annots {\n  /annot_pgnr \1 def~
-  i} bind def
+  s~^.*=([0-9]+)$~/pg\1_annots {\
+    /annot_pgnr \1 def\
+    ~
+  i\} bind def
   i
   a\  prepare_annots
-  a\  annot_pgnr 2 mod 0 eq { pghead_even_annots } { pghead_odd_annots } ifelse
   a\  pghead_each_annots
 b ann_next
 

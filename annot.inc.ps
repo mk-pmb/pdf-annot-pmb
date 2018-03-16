@@ -61,9 +61,14 @@
 /font_fwB { /Courier-Bold 1.0 font_set } bind def
 
 /showpage_with_annots {
+  /annots_func exch def
   gsave
-  /a4_mm_init PMBPS
-  0 LIB_SIMPLE_PS_PMB /page_height get translate
+  /pagesize_a4_mm_upright PMBPS
+  /configure_page_size PMBPS
+  initgraphics
+  /scale_to_mm PMBPS
+
+  0 LIB_SIMPLE_PS_PMB /pageHeight get translate
   % /rgb_line_coordsys PMBPS
 
   /fontsize 3.3 def
@@ -71,7 +76,7 @@
   /lineheight fontsize linespacing add def
   font_ss
 
-  cvx exec
+  annots_func cvx exec
 
   grestore
   systemdict /showpage get exec
