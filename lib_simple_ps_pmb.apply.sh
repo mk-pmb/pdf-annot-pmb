@@ -52,7 +52,7 @@ function lib_simple_ps_pmb_apply () {
 
   local FN=
   local BFN=
-  local TMP_FN=
+  local TMP_BFN=
   for FN in *.ps; do
     [ -f "$FN" ] || continue
     [ -L "$FN" ] && continue
@@ -61,26 +61,24 @@ function lib_simple_ps_pmb_apply () {
       lib_* ) continue;;
     esac
     echo -n "$FN: "
-    ps2pdf "$TMP_FN".tmp /dev/null || return $?$(
+    ps2pdf "$FN" /dev/null || return $?$(
       echo "E: failed to render original $FN" >&2)
-    TMP_BFN="$BFN.upd-$$"
+    TMP_BFN="tmp.upd-$$.$BFN"
     <<<"$LIB_LINES" sed -nrf <(echo "$SED_INSERT_CMD"
-      ) -- "$FN" >"$TMP_FN".tmp || return $?
-    diff -U 4 "$FN" "$TMP_FN".tmp >"$TMP_FN".diff
-    if [ -s "$TMP_FN".diff ]; then
-      ps2pdf "$TMP_FN".tmp /dev/null || return $?$(
-        echo "E: failed to render $TMP_FN.tmp" >&2)
-      mv --no-target-directory -- "$TMP_FN".tmp "$FN" || return $?$(
-        echo "E: failed to mv $TMP_FN.tmp" >&2)
+      ) -- "$FN" >"$TMP_BFN".ps || return $?
+    diff -U 4 "$FN" "$TMP_BFN".ps >"$TMP_BFN".diff
+    if [ -s "$TMP_BFN".diff ]; then
+      ps2pdf "$TMP_BFN".ps /dev/null || return $?$(
+        echo "E: failed to render $TMP_BFN.ps" >&2)
+      mv --no-target-directory -- "$TMP_BFN".ps "$FN" || return $?$(
+        echo "E: failed to mv $TMP_BFN.ps" >&2)
       echo 'updated.'
     else
-      rm -- "$TMP_FN".tmp
+      rm -- "$TMP_BFN".ps
       echo 'no changes.'
     fi
-    rm -- "$TMP_FN".diff
+    rm -- "$TMP_BFN".diff
   done
-
-  return 0
 }
 
 

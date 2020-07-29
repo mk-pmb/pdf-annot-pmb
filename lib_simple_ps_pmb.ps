@@ -1,13 +1,14 @@
-%!PS-Adobe-3.0
+%!PS-Adobe-3.0 EPSF-3.0
+% -*- coding: latin-1 -*-
 
 /LIB_SIMPLE_PS_PMB 8 dict def %%autoupdate:LIB_SIMPLE_PS_PMB:start%%
-%%{ "version": "0.1.0" }
+%%{ "version": "0.1.2" }
 /PMBPS {
   dup type /nametype ne { exch } if
   LIB_SIMPLE_PS_PMB exch get exec
 } bind def
 LIB_SIMPLE_PS_PMB begin
-  /orig_showpage /showpage cvx def
+  /orig_showpage { showpage } bind def
   /typeof { dup where { exch get type } { pop /undefined } ifelse } def
   /defined { where dup { exch pop } if } def
   /eqeq { == } def
@@ -72,11 +73,6 @@ LIB_SIMPLE_PS_PMB begin
     /initpage PMBPS
   } bind def
 
-  /a4_mm_init {
-    (!!) dup ==
-    (!! DEPRECATED !! a4_mm_init -> initpage_a4_mm_upright !!) == == FAIL
-  } bind def
-
   /setblack {
     1 exch sub
     % ^-- gray = white-ness = 1 - blackness
@@ -94,6 +90,17 @@ LIB_SIMPLE_PS_PMB begin
       dup /to get dup /x get dup /y get lineto pop
       stroke
     grestore pop
+  } def
+
+  /rgb_line_coordsys {
+    gsave
+      5 setlinewidth
+      %% red and blue channel: 0 = +, 1 = -
+      0 1 0 0 0  20  50 rgb_line
+      0 0 1 0 0  20 -50 rgb_line
+      1 0 0 0 0 -20  50 rgb_line
+      1 0 1 0 0 -20 -50 rgb_line
+    grestore
   } def
 
   /select_font { LIB_SIMPLE_PS_PMB begin
@@ -151,7 +158,7 @@ LIB_SIMPLE_PS_PMB begin
     gsave
     % use an anon dict as namespace for internal subprocs:
     16 dict begin
-    /all_lines exch def
+    /printall { { each_item } forall } def
     /stringtype {
       0 CurrentFontSize neg translate
       0 0 moveto
@@ -166,7 +173,7 @@ LIB_SIMPLE_PS_PMB begin
       % [(current line:) currentdict /cur_type get cur_item] ==
       cur_type
     } def
-    all_lines currentdict /each_item get forall
+    printall
     end   % no pop: we didn't put it onto the operand stack (currentdict)
     grestore
   end } def
