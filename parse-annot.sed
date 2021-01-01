@@ -16,7 +16,7 @@
     b ann_next
     }
   /^\s*(def)(\s|$)/b cmd_line
-  /^\s*(<:id:>)\s+(<:id:>)\s+(<:id:>\s*=\s*|)(\(|\$)/b text_line
+  /^\s*(<:id:>)\s+(<:id:>)\s+(<:id:>\s*=\s*|)((%<:id:>|)\(|\$)/b text_line
   /^\s*[A-Za-z]<:id:>(\s|$)/b cmd_line
   s~^%:[a-z\-]+=.*$~~
   s~^\s*\#.*$~~
@@ -54,6 +54,8 @@ b ann_next
     b text_line
   }
   s~^(\s*(\S+\s+){2})[^=\(]*=\s*\$?~\1~
+  s~^(\s*(\S+\s+){2})%(<:id:>)\(~%\a \3 \1(~
+  /^%\a/b ann_next
   s~$~\r~
   s~\s(\(\s*\?\s*|<\?>)\)\s*$~& annot_unsure~
   s~\r~ /print_mxty PMBPS~

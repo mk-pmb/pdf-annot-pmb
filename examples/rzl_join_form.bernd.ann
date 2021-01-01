@@ -62,6 +62,18 @@ grestore
 
 
 
+gsave
+    # lower left rgb box image
+    translate 10 -125
+    scale 5 dup
+    %:include=rgb-box.ext.ps
+grestore
+gsave
+    # lower left rgb box image
+    translate 145 -125
+    scale 5 dup
+    %:include=rgb-box.ext.ps
+grestore
 
 
 
