@@ -44,16 +44,18 @@ font_ss
 
 
 gsave
- col1     50    bank.depositor1=$FirstName
-   60      0    bank.depositor2=$LastName
- col1     LH    bank.name=(MtGox)
- col1     LH    bank.account=(?)
- col1     LH    bank.blz=(MGOXDE4D0GE)
+ col1     50    bank.depositor1 =$FirstName
+   60      0    bank.depositor2 =$LastName
+ col1     LH    bank.name       =(MtGox)
+ col1     LH    bank.account    =(?)
+ col1     LH    bank.blz        =(MGOXD)..
+                # Pretend BLZ is so long we need to split it.
+                (E4D0GE)
 grestore
 
 gsave
     translate   100 -46.6
-   20     24    fee.donate=(9000,01 DGC <?>)
+   20     24    fee.donate  =(9000,01 DGC <?>)
     # or:
     # crossout 0 0 78 38.5
 grestore
