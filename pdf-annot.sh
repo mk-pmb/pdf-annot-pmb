@@ -1,13 +1,17 @@
 #!/bin/bash
 # -*- coding: utf-8, tab-width: 2 -*-
-SELFFILE="$(readlink -m "$0")"; SELFPATH="$(dirname "$SELFFILE")"
-SELFNAME="$(basename "$SELFFILE" .sh)"
 
 
 function pdfannot () {
-  # cd "$SELFPATH" || return $?
-  local -A CFG
-  CFG[repeat]=once
+  export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
+
+  local SELFFILE="$(readlink -m -- "$BASH_SOURCE")"
+  local SELFPATH="$(dirname -- "$SELFFILE")"
+  local SELFNAME="$(basename -- "$SELFFILE" .sh)"
+
+  local -A CFG=(
+    [repeat]=once
+    )
   local FILES=()
   local OPT=
   while [ "$#" -gt 0 ]; do
@@ -60,8 +64,6 @@ function pdfannot () {
     SECONDS=0
     render_one_annot "$FN" || return $?
   done
-
-  return 0
 }
 
 
