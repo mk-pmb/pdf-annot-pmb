@@ -44,11 +44,12 @@ function lib_simple_ps_pmb_apply () {
       p;n
     b copy
     : skip_to_ancient_end_mark
-      n;/^\s*\/PMBPS \{.*\} def$/!b skip_to_end_mark
-    b copy
+      n;/^\s*\/PMBPS \{.*\} def$/{n;b copy}
+    b skip_to_end_mark
     : skip_to_end_mark
-      n;/'"${LIB_AUMARKS//§/end}"'/!b skip_to_end_mark
-    b copy'
+      n;/'"${LIB_AUMARKS//§/end}"'/{n;b copy}
+    b skip_to_end_mark
+    '
 
   local FN=
   local BFN=
@@ -66,6 +67,9 @@ function lib_simple_ps_pmb_apply () {
     TMP_BFN="tmp.upd-$$.$BFN"
     <<<"$LIB_LINES" sed -nrf <(echo "$SED_INSERT_CMD"
       ) -- "$FN" >"$TMP_BFN".ps || return $?
+    grep -oPe "${LIB_AUMARKS//§/.*}" -- "$TMP_BFN".ps \
+      | sort | uniq --repeated --count | grep . && return 4$(
+      echo "E: found multiple markers of same type in $TMP_BFN.ps" >&2)
     diff -U 4 "$FN" "$TMP_BFN".ps >"$TMP_BFN".diff
     if [ -s "$TMP_BFN".diff ]; then
       ps2pdf "$TMP_BFN".ps /dev/null || return $?$(
