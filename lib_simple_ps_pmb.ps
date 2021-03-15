@@ -185,6 +185,17 @@ LIB_SIMPLE_PS_PMB begin
     grestore
   end } def
 
+  /fillrect_ltwhrgb { 4 dict begin
+    gsave
+      setrgbcolor
+      /h exch def
+      /w exch def
+      /t exch def
+      /l exch def
+      l t h add neg w h rectfill
+    grestore
+  end } def
+
   /linerect { 1 dict begin
     /@args <<
       /top    ()

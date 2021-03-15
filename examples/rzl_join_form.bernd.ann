@@ -23,6 +23,7 @@ def LastName    (Brot)
 %:pg=even
 %:pg=odd
 %:pg=each
+    rgbrect     178.8   265.2   12  8       0.5 dup dup
     translate   17  -79
 
 %:pg=1
@@ -59,8 +60,6 @@ gsave
     # or:
     # crossout 0 0 78 38.5
 grestore
-
-
 
 gsave
     # lower left rgb box image

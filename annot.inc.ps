@@ -26,16 +26,7 @@
 
 /annot_rgbrect {
   %%args: left top width height cR cG cB
-  7 dict begin
-    gsave
-      setrgbcolor
-      /height exch def
-      /width exch def
-      /top exch def
-      /left exch def
-      left top neg height sub width height rectfill
-    grestore
-  end
+  /fillrect_ltwhrgb PMBPS
 } bind def
 
 /annot_unsure {
