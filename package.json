@@ -1,5 +1,5 @@
 { "name": "pdf-annot-pmb",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Tools (mostly bash + sed scripts) for adding annotations to PDF documents.",
   "keywords": [
     "pdf",
