@@ -15,7 +15,7 @@
     (annots: unsupported: &) FAIL {~
     b ann_next
     }
-  /^\s*(def)(\s|$)/b cmd_line
+  /^\s*(def|set[a-z]+)(\s|$)/b cmd_line
   /^\s*(<:id:>)\s+(<:id:>)\s+(<:id:>\s*=\s*|)((%<:id:>|)\(|\$)/b text_line
   /^\s*[A-Za-z]<:id:>(\s|$)/b cmd_line
   s~^%:[a-z\-]+=.*$~~
@@ -63,6 +63,8 @@ b ann_next
 
 : cmd_line
   s~^\s*(def)\s+~&/~
+  s~^\s*(setblack)\s+([0-9.]+)~\2 /\1 PMBPS~
+  s~^\s*(setgr[ae]y)\s~() == (\1: try setblack) == () == \1 ~
   s~^(\s*)(crossout|rgbrect|unsure|textblock)(\s+|$)~\1annot_\2\3~
   /\[$/{
     : cmd_line__read_more_array_lines
