@@ -12,9 +12,17 @@ function metased_unpack_rules () {
 }
 
 
+function preg_quote () { csed -re 's~[^A-Za-z0-9_]~\\&~g' -- "$@"; }
+
+
 function sedrules_ann_include_lines () {
+  local HOME_PQ="$(preg_quote <<<"$HOME")"
   grep -hnFe '%?!' -- "$1" | csed -nrf <(echo '
-    s~^([0-9]+):%\?\!\s+%:include=(.*)$~\1{s!^\\S+\\s+!% !;r \2\n    }~p')
+    s~^([0-9]+):%\?\!\s+%:include=(.*)$~\1{s!^\\S+\\s+!% !\
+      r \2\n    }~p
+    ') | csed -rf <(echo '
+    s!^(\s*r +)~/!\1'"$HOME_PQ"'/!
+    ')
 }
 
 
