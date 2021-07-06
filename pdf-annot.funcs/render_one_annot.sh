@@ -11,6 +11,11 @@ function render_one_annot () {
   scan_annot_meta || return $?
   decide_pages_range || return $?
   local DEST_PDF="$DEST_BFN.pdf"
+  [ "$DEST_PDF" -ef "${BGPDF[fn]}" ] && return 4$(
+    echo "E: Flinching from replacing destination '$DEST_PDF'" \
+      "which seems to be the same file as the background PDF" \
+      "'${BGPDF[fn]}'." >&2)
+
   pdftops_one_annot || return $?
   begin_ps_output || return $?
   render_ann_code || return $?
